@@ -21,6 +21,9 @@ object AppPrefs {
 		private set
 	var parallelDownloads by mutableStateOf(2)
 		private set
+	/** Keep Android Open notice on Home; hidden once the user dismisses it, can be shown again from Settings. */
+	var kaoBannerVisible by mutableStateOf(true)
+		private set
 
 	fun init(context: Context) {
 		val p = context.getSharedPreferences(FILE, Context.MODE_PRIVATE)
@@ -28,6 +31,7 @@ object AppPrefs {
 		showAdult = p.getBoolean("show_adult", false)
 		autoSelectServer = p.getBoolean("auto_server", true)
 		parallelDownloads = p.getInt("parallel_downloads", 2)
+		kaoBannerVisible = p.getBoolean("kao_banner", true)
 	}
 
 	private fun prefs() = WatanukiApp.instance.getSharedPreferences(FILE, Context.MODE_PRIVATE)
@@ -35,6 +39,7 @@ object AppPrefs {
 	fun setOnboardingDone() { onboardingDone = true; prefs().edit { putBoolean("onboarding_done", true) } }
 	fun updateShowAdult(value: Boolean) { showAdult = value; prefs().edit { putBoolean("show_adult", value) } }
 	fun updateParallelDownloads(value: Int) { parallelDownloads = value.coerceIn(1, 4); prefs().edit { putInt("parallel_downloads", parallelDownloads) } }
+	fun updateKaoBanner(value: Boolean) { kaoBannerVisible = value; prefs().edit { putBoolean("kao_banner", value) } }
 	fun updateAutoSelectServer(value: Boolean) { autoSelectServer = value; prefs().edit { putBoolean("auto_server", value) } }
 
 	private val adultWords = listOf("hentai", "ecchi", "+18", "18+", "adulto", "adult", "yaoi hard", "smut", "erótico", "erotico", "porn")

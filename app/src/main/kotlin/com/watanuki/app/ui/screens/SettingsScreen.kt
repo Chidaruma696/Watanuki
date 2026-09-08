@@ -73,6 +73,9 @@ fun SettingsScreen(contentPadding: PaddingValues, onOpenDownloads: () -> Unit) {
 			)
 		}
 
+		KomiSectionHead(label = stringResource(R.string.about), kicker = "情報")
+		AboutSection()
+
 		KomiText(
 			text = "― ${stringResource(R.string.app_name)} ${BuildConfig.VERSION_NAME} ―",
 			role = KomiTextRole.Stamp, color = colors.onSurfaceVariant, fontSize = 11.sp, uppercase = false, textAlign = TextAlign.Center,

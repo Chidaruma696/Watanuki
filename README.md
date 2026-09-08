@@ -16,6 +16,10 @@
 
 <br/>
 
+[![Descargar APK](https://img.shields.io/github/v/release/Chidaruma696/Watanuki?label=%F0%9F%93%B2%20DESCARGAR%20APK&style=for-the-badge&color=2b2140)](https://github.com/Chidaruma696/Watanuki/releases/latest)
+
+<br/>
+
 *59 fuentes en español compiladas dentro de la app · sin extensiones · sin anuncios · sin rastreo*
 
 </div>
@@ -25,6 +29,16 @@
 > [!IMPORTANT]
 > **Watanuki no aloja, sube ni distribuye ningún vídeo.** Solo lee sitios públicos de terceros, igual que un navegador.
 > Si puedes pagar una plataforma legal, hazlo. Este proyecto existe por una carencia, no como sustituto. Lee [por qué existe](#-por-qué-existe-watanuki) y [cómo apoyar al anime](#-apoya-al-anime-de-verdad).
+
+<br/>
+
+## 📲 Descargar
+
+1. Entra en la [última versión](https://github.com/Chidaruma696/Watanuki/releases/latest) y baja el archivo `Watanuki-x.y.z.apk`.
+2. Ábrelo en el móvil. Android te pedirá permiso para instalar apps de esta fuente; acéptalo una vez.
+3. Listo. Las siguientes versiones se instalan encima sin perder ajustes ni descargas.
+
+Watanuki no está en Play Store ni va a estarlo; se distribuye solo desde aquí. Y mientras Android siga siendo abierto, con eso basta ([por qué importa](#-keep-android-open)).
 
 <br/>
 

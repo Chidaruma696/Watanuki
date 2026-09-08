@@ -1,0 +1,12 @@
+# Sources are instantiated by name from the generated registry: keep every extension class.
+-keep class eu.kanade.tachiyomi.** { *; }
+-keep class com.watanuki.sources.** { *; }
+-keep class uy.kohesive.injekt.** { *; }
+-keep class rx.** { *; }
+-dontwarn rx.internal.util.unsafe.**
+-dontwarn org.mozilla.javascript.**
+-dontwarn com.dylibso.chicory.**
+-keep class app.cash.quickjs.** { *; }
+-keep class org.videolan.** { *; }
+-keepclassmembers class **$$serializer { *; }
+-keepclasseswithmembers class * { @kotlinx.serialization.Serializable <fields>; }

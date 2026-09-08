@@ -4,7 +4,7 @@
 
 # Watanuki
 
-**渡 · Un lector de anime de código abierto para Latinoamérica, con estética manga.**
+**渡 · Un visor de anime de código abierto para Latinoamérica, con estética manga.**
 
 <br/>
 

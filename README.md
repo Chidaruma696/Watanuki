@@ -171,8 +171,6 @@ Por eso la app muestra un aviso en Inicio (se puede ocultar) y un enlace permane
 
 <div align="center">
 
-*Hecho en Latinoamérica, con respeto por quienes hacen el anime.*
-
 渡 · わたぬき
 
 </div>

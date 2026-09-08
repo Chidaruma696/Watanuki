@@ -110,7 +110,7 @@ Watanuki
 ### Compilar
 
 ```bash
-git clone https://github.com/<tu-usuario>/Watanuki.git
+git clone https://github.com/Chidaruma696/Watanuki.git
 cd Watanuki
 ./gradlew :app:assembleDebug        # APK en app/build/outputs/apk/debug/
 ```

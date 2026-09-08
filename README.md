@@ -1,12 +1,12 @@
-[🇪🇸 Español](README.es.md)
+[🇬🇧 English](README.en.md)
 
 <div align="center">
   <br/>
-  <img src="docs/icon.png" width="180" alt="Watanuki icon" />
+  <img src="docs/icon.png" width="180" alt="Icono de Watanuki" />
 
 # Watanuki
 
-**渡 · An open-source anime viewer for Latin America, with a manga aesthetic.**
+**渡 · Un visor de anime de código abierto para Latinoamérica, con estética manga.**
 
 <br/>
 
@@ -14,160 +14,160 @@
 ![Kotlin](https://img.shields.io/badge/kotlin-2.2-7f52ff?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/jetpack%20compose-ui-4285f4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
 ![libVLC](https://img.shields.io/badge/libVLC-3.6-ff8800?style=for-the-badge&logo=vlcmediaplayer&logoColor=white)
-![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202.0-1b150d?style=for-the-badge)
+![Licencia Apache 2.0](https://img.shields.io/badge/licencia-Apache%202.0-1b150d?style=for-the-badge)
 
 <br/>
 
-[![Download APK](https://img.shields.io/github/v/release/Chidaruma696/Watanuki?label=%F0%9F%93%B2%20DOWNLOAD%20APK&style=for-the-badge&color=2b2140)](https://github.com/Chidaruma696/Watanuki/releases/latest)
+[![Descargar APK](https://img.shields.io/github/v/release/Chidaruma696/Watanuki?label=%F0%9F%93%B2%20DESCARGAR%20APK&style=for-the-badge&color=2b2140)](https://github.com/Chidaruma696/Watanuki/releases/latest)
 
 <br/>
 
-*59 Spanish-language sources compiled into the app · no extensions · no ads · no tracking*
+*59 fuentes en español compiladas dentro de la app · sin extensiones · sin anuncios · sin rastreo*
 
 </div>
 
 ---
 
 > [!IMPORTANT]
-> **Watanuki does not host, upload, or distribute any video.** It only reads public third-party sites, just like a browser does.
-> If you can pay for a legal platform, do it. This project exists because of a gap, not as a replacement. Read [why it exists](#-why-watanuki-exists) and [how to support anime](#-support-anime-for-real).
+> **Watanuki no aloja, sube ni distribuye ningún vídeo.** Solo lee sitios públicos de terceros, igual que un navegador.
+> Si puedes pagar una plataforma legal, hazlo. Este proyecto existe por una carencia, no como sustituto. Lee [por qué existe](#-por-qué-existe-watanuki) y [cómo apoyar al anime](#-apoya-al-anime-de-verdad).
 
 <br/>
 
-## 📲 Download
+## 📲 Descargar
 
-1. Go to the [latest release](https://github.com/Chidaruma696/Watanuki/releases/latest) and download the `Watanuki-x.y.z.apk` file.
-2. Open it on your phone. Android will ask for permission to install apps from this source; accept it once.
-3. Done. Later versions install on top without losing your settings or downloads.
+1. Entra en la [última versión](https://github.com/Chidaruma696/Watanuki/releases/latest) y baja el archivo `Watanuki-x.y.z.apk`.
+2. Ábrelo en el móvil. Android te pedirá permiso para instalar apps de esta fuente; acéptalo una vez.
+3. Listo. Las siguientes versiones se instalan encima sin perder ajustes ni descargas.
 
-Watanuki is not on the Play Store and never will be; it is distributed only from here. And as long as Android stays open, that is enough ([why it matters](#-keep-android-open)).
+Watanuki no está en Play Store ni va a estarlo; se distribuye solo desde aquí. Y mientras Android siga siendo abierto, con eso basta ([por qué importa](#-keep-android-open)).
 
 <br/>
 
-## 🗺️ What it is
+## 🗺️ Qué es
 
-Watanuki is an Android app for watching anime from Spanish-language sites, made for people who live in a country where the legal offering arrives late, incomplete, or not at all. It takes the community sources from [Aniyomi](https://github.com/Kohi-den/extensions-source), **compiles them into the APK** (no loose extensions to install), wraps them in a manga-styled interface, and gives them a serious player.
+Watanuki es una app Android para ver anime desde sitios en español, pensada para gente que vive en un país donde la oferta legal llega tarde, incompleta o directamente no llega. Toma las fuentes de la comunidad de [Aniyomi](https://github.com/Kohi-den/extensions-source), las **compila dentro del APK** (nada de instalar extensiones sueltas), las envuelve en una interfaz de estética manga y les pone un reproductor serio.
 
-| 📺 Watch | 📥 Save | 🎨 Live |
+| 📺 Ver | 📥 Guardar | 🎨 Vivir |
 | --- | --- | --- |
-| Home feed with recommendations, latest episodes, and most popular per source | Parallel downloads, per episode or full season, with resume support | Ten palettes inspired by Touhou characters, in light and dark |
-| libVLC player: any codec, six scaling modes, quick skips | Queue with progress, retries, and free-space checks | "Manga" design system ported from Komi Store: paper, ink, stamps, and screentones |
-| Automatic pick of the best server, or a manual list | Offline playback of everything you saved | Adult content filter **off by default** from the very first launch |
+| Feed de inicio con recomendaciones, últimos episodios y populares por fuente | Descargas en paralelo, por episodio o temporada completa, con reanudación | Diez paletas inspiradas en personajes de Touhou, en claro y oscuro |
+| Reproductor libVLC: cualquier códec, seis modos de escala, saltos rápidos | Cola con progreso, reintentos y verificación de espacio | Sistema de diseño "Manga" portado de Komi Store: papel, tinta, sellos y tramas |
+| Elección automática del mejor servidor o lista manual | Reproducción sin conexión de lo guardado | Filtro de contenido adulto **desactivado por defecto** desde el primer arranque |
 
 <br/>
 
-## ✨ Komi aesthetic
+## ✨ Estética Komi
 
-Watanuki's interface is an adaptation of the **Manga** *personality* from [Komi Store](https://github.com/komi-store/komi-store), a design system that drops Material to look like a manga page instead:
+La interfaz de Watanuki es una adaptación del *personality* **Manga** de [Komi Store](https://github.com/komi-store/komi-store), un sistema de diseño que renuncia a Material para parecerse a una página de manga:
 
-- 📄 **Paper and ink**: cream background by day, ink black by night; no neutral grays.
-- ▭ **Zero rounded corners**: panels with 3 dp borders and hard, offset shadows, no blur.
-- 🔤 **Anton in uppercase** for headlines, Noto Sans for body text, JetBrains Mono for data.
-- 🩹 **Stamps and screentones**: headers with a slanted marker, dot screentones in the corners, buttons that get "stamped" when pressed.
-- 🎌 Japanese *kickers* in every section (今日 · FOR YOU, 保存 · DOWNLOADS).
+- 📄 **Papel y tinta**: fondo crema de día, negro tinta de noche; nada de grises neutros.
+- ▭ **Cero esquinas redondeadas**: paneles con bordes de 3 dp y sombras duras desplazadas, sin desenfoque.
+- 🔤 **Anton en mayúsculas** para titulares, Noto Sans para el cuerpo, JetBrains Mono para datos.
+- 🩹 **Sellos y tramas**: cabeceras con marcador inclinado, tramas de puntos en las esquinas, botones que se "estampan" al pulsar.
+- 🎌 *Kickers* en japonés en cada sección (今日 · PARA TI, 保存 · DESCARGAS).
 
-The colors are not Komi's: each theme takes its palette from a Touhou Project character (Reimu, Marisa, Patchouli, Sakuya, Remilia, Flandre, Cirno, Youmu, Yuyuko, Alice), each with a day and a night version.
-
-<br/>
-
-## 💔 Why Watanuki exists
-
-This is not an app "to avoid paying." It is a response to a concrete, documented problem: **in Latin America, legal anime is scarce, fragmented, and expensive relative to income.**
-
-- 📉 **The legal offering doesn't cover what airs.** Every season there are relevant series that no platform licenses for the region, or that arrive weeks or months behind Japan. When there are no simulcast rights, a territory can wait six weeks, three months, or more than a year for legal access, if it ever comes ([CBR, fall 2025](https://www.cbr.com/fall-2025-anime-streaming-limbo/); [Vitrina](https://vitrina.ai/blog/anime-regional-licensing-restrictions/)).
-- 🧩 **Catalogs break down by country.** An anime can be on Crunchyroll in the United States and not in Mexico because another company holds the regional exclusive; licenses expire and series vanish without warning ([Level Up](https://www.levelup.com/noticias/crunchyroll-elimina-sin-avisar-mas-de-5-animes-muy-queridos-de-su-catalogo-y-demuestra-los-peligros-del-formato-digital/)). HiDive left Latin America in 2024 and left titles with no legal path at all ([MyAnimeList](https://myanimelist.net/stacks/58905)).
-- 🌎 **The region is already watching anime; just without a legal option.** Brazil is the second country in the world for anime piracy; Mexico, Colombia, Chile, and Argentina make up the bulk of the audience of the planet's largest anime piracy site ([CBR](https://www.cbr.com/hianime-biggest-piracy-streaming-america-government-threat/); [Advanced Television](https://advanced-television.com/2016/10/17/anime-hit-by-7-7bn-pirate-visits/)). According to MUSO, in 2024 Mexico racked up 4.4 billion visits to piracy sites and Brazil 4.1 billion ([MUSO 2024](https://www.muso.com/hubfs/MUSO%202024%20Piracy%20Trends%20and%20Insights.pdf)).
-- ☠️ **And it does so on dangerous sites.** Anime piracy websites in Brazil turned out to be up to 80 times riskier than a legitimate site in terms of malware and fraud ([Advanced Television, 2026](https://www.advanced-television.com/2026/05/01/studies-highlight-latam-piracy-cybersecurity-risks/)). Watanuki at least removes that layer: no ads, no trackers, no pop-ups, nothing weird to install.
-
-Watanuki doesn't fix any of that. It only makes the path people already use cleaner and safer while the industry fails to show up.
+Los colores no son los de Komi: cada tema toma su paleta de un personaje de Touhou Project (Reimu, Marisa, Patchouli, Sakuya, Remilia, Flandre, Cirno, Youmu, Yuyuko, Alice), cada uno con versión de día y de noche.
 
 <br/>
 
-## 🙇 To the authors, studios, and animators
+## 💔 Por qué existe Watanuki
 
-We apologize. Sincerely, not as a formality.
+Esto no es una app "para no pagar". Es una respuesta a un problema concreto y documentado: **en Latinoamérica el anime legal es escaso, fragmentado y caro en proporción al ingreso.**
 
-Behind every episode there are people working under conditions the industry itself admits are unsustainable: young animators earning under two million yen a year (about 13,000 dollars), workdays past twelve hours, and between 50% and 70% of the trade working freelance with no labor protections ([Infobae](https://www.infobae.com/america/mundo/2025/02/17/japon-enfrenta-fuertes-denuncias-laborales-en-la-industria-del-anime/); [Nippon.com](https://www.nippon.com/es/in-depth/d01174/); [Somos Kudasai](https://somoskudasai.com/noticias/animador-japones-revela-salario-explotacion-industria-anime-pirateria/)).
+- 📉 **La oferta legal no cubre lo que se estrena.** Cada temporada hay series relevantes que ninguna plataforma licencia para la región, o que llegan con semanas o meses de retraso respecto a Japón. Cuando no hay derechos de simulcast, un territorio puede esperar seis semanas, tres meses o más de un año por acceso legal, si es que llega ([CBR, otoño 2025](https://www.cbr.com/fall-2025-anime-streaming-limbo/); [Vitrina](https://vitrina.ai/blog/anime-regional-licensing-restrictions/)).
+- 🧩 **Los catálogos se rompen por país.** Un anime puede estar en Crunchyroll en Estados Unidos y no en México porque otra empresa tiene la exclusiva regional; las licencias caducan y las series desaparecen sin aviso ([Level Up](https://www.levelup.com/noticias/crunchyroll-elimina-sin-avisar-mas-de-5-animes-muy-queridos-de-su-catalogo-y-demuestra-los-peligros-del-formato-digital/)). HiDive se fue de Latinoamérica en 2024 y dejó títulos sin ninguna vía legal ([MyAnimeList](https://myanimelist.net/stacks/58905)).
+- 🌎 **La región ya está viendo anime; solo que sin opción legal.** Brasil es el segundo país del mundo en piratería de anime; México, Colombia, Chile y Argentina forman el grueso de la audiencia del mayor sitio pirata de anime del planeta ([CBR](https://www.cbr.com/hianime-biggest-piracy-streaming-america-government-threat/); [Advanced Television](https://advanced-television.com/2016/10/17/anime-hit-by-7-7bn-pirate-visits/)). Según MUSO, en 2024 México sumó 4.400 millones de visitas a sitios piratas y Brasil 4.100 millones ([MUSO 2024](https://www.muso.com/hubfs/MUSO%202024%20Piracy%20Trends%20and%20Insights.pdf)).
+- ☠️ **Y lo hace en sitios peligrosos.** Las webs piratas de anime en Brasil resultaron hasta 80 veces más arriesgadas que un sitio legítimo en cuanto a malware y fraude ([Advanced Television, 2026](https://www.advanced-television.com/2026/05/01/studies-highlight-latam-piracy-cybersecurity-risks/)). Watanuki al menos elimina esa capa: sin anuncios, sin rastreadores, sin pop-ups, sin instalar nada raro.
 
-Every view that doesn't go through an official channel is a view that never comes back to them. We know that. That is why this project has no advertising, makes no money, and doesn't try to compete with anyone: if tomorrow the whole catalog reached the region legally, Watanuki should disappear, and we would be fine with that.
-
-<br/>
-
-## 💚 Support anime for real
-
-If you use Watanuki, **give something back**. It doesn't take much; it has to be real. In order of impact:
-
-1. 💳 **Pay for a legal platform** even if it doesn't have everything. Crunchyroll, Netflix, Prime Video, and Pluto TV license for the region, and those audience numbers are what make a studio see Latin America as a market rather than a loss.
-2. 📀 **Buy official Blu-rays, manga, and soundtracks** when they reach your country. It's the most direct income for the production committees.
-3. 🧸 **Official merchandise, not knockoffs.** A licensed figure or artbook pays salaries; the imitation pays someone else.
-4. 🎟️ **Go to the theater** when an anime film opens in your city. Local distributors decide what to bring next based on what filled seats last time.
-5. 📣 **Ask for what you want to watch, through official channels.** Platforms read requests by region; your country's catalog is negotiated with that data.
-6. 💬 **Talk about the anime, not the piracy site.** Recommend the work, the studio, the author. Let demand grow for the legal option, not for the shortcut.
-
-And if an anime you watch on Watanuki shows up on a legal platform in your country, **switch**. That's the deal.
+Watanuki no arregla nada de eso. Solo hace que, mientras la industria no llega, el camino que la gente ya usa sea más limpio y más seguro.
 
 <br/>
 
-## 🔧 How it works
+## 🙇 A los autores, estudios y animadores
+
+Pedimos disculpas. De verdad, no como fórmula.
+
+Detrás de cada episodio hay personas que trabajan en condiciones que la propia industria reconoce como insostenibles: animadores jóvenes con sueldos anuales por debajo de los dos millones de yenes (unos 13.000 dólares), jornadas que superan las doce horas, y entre el 50 % y el 70 % del gremio trabajando como autónomos sin protección laboral ([Infobae](https://www.infobae.com/america/mundo/2025/02/17/japon-enfrenta-fuertes-denuncias-laborales-en-la-industria-del-anime/); [Nippon.com](https://www.nippon.com/es/in-depth/d01174/); [Somos Kudasai](https://somoskudasai.com/noticias/animador-japones-revela-salario-explotacion-industria-anime-pirateria/)).
+
+Cada vista que no pasa por un canal oficial es una vista que no vuelve a ellos. Somos conscientes. Por eso este proyecto no tiene publicidad, no gana dinero y no pretende competir con nadie: si mañana toda la oferta llegara legalmente a la región, Watanuki debería desaparecer, y nos parecería bien.
+
+<br/>
+
+## 💚 Apoya al anime de verdad
+
+Si usas Watanuki, **devuelve algo**. No hace falta mucho; hace falta que sea real. En orden de impacto:
+
+1. 💳 **Paga una plataforma legal** aunque no tenga todo. Crunchyroll, Netflix, Prime Video o Pluto TV licencian para la región y esas cifras de audiencia son lo que hace que un estudio vea Latinoamérica como mercado y no como pérdida.
+2. 📀 **Compra Blu-ray, manga y bandas sonoras oficiales** cuando lleguen a tu país. Es el ingreso más directo para los comités de producción.
+3. 🧸 **Merchandising oficial, no copias.** Una figura o un artbook con licencia paga sueldos; la imitación paga a otro.
+4. 🎟️ **Ve al cine** cuando estrenen una película de anime en tu ciudad. Los distribuidores locales deciden qué traer según lo que llenó salas la última vez.
+5. 📣 **Pide lo que quieres ver, por los canales oficiales.** Las plataformas leen las peticiones por región; el catálogo de tu país se negocia con esos datos.
+6. 💬 **Habla del anime, no del sitio pirata.** Recomienda la obra, el estudio, la autora. Que crezca la demanda de lo legal, no del atajo.
+
+Y si un anime que ves en Watanuki aparece en una plataforma legal en tu país, **cambia**. Es el trato.
+
+<br/>
+
+## 🔧 Cómo funciona
 
 ```
 Watanuki
-├── app/              Compose UI (feed, catalog, details, downloads, settings), libVLC player, streaming proxy
-└── anime-sources/    Aniyomi sources compiled as a module + runtime for the extensions-lib 14 API
-    ├── upstream/     Copy of Kohi-den/extensions-source (src/es, lib, lib-multisrc), Apache 2.0
-    └── src/          Runtime: networking, cookies, Cloudflare, JavaScript engine, models, generated registry
+├── app/              Interfaz Compose (feed, catálogo, ficha, descargas, ajustes), reproductor libVLC, proxy de streaming
+└── anime-sources/    Fuentes de Aniyomi compiladas como módulo + runtime de la API extensions-lib 14
+    ├── upstream/     Copia de Kohi-den/extensions-source (src/es, lib, lib-multisrc), Apache 2.0
+    └── src/          Runtime: red, cookies, Cloudflare, motor JavaScript, modelos, registro generado
 ```
 
-- 🧩 **Compiled sources, not extensions.** A Gradle script walks `upstream/src/es`, adds every source and every extractor as a *source set* of the module, and generates a registry of the classes. There are no APKs to install and no permissions needed to see them.
-- 🌐 **Our own runtime for the Aniyomi API.** The sources are written against `extensions-lib` v14; Watanuki implements that API (`AnimeHttpSource`, models, networking) with code from Aniyomi and our own.
-- 🎬 **Local proxy for the player.** libVLC only accepts User-Agent and Referer, so videos go through an HTTP server on `127.0.0.1` that forwards them with all of the source's headers and cookies and rewrites the HLS playlists.
-- 📦 **Our own downloads.** OkHttp with range-based resume, HLS concatenated into a single file, a queue with multiple workers, and free-space checks.
+- 🧩 **Fuentes compiladas, no extensiones.** Un script de Gradle recorre `upstream/src/es`, añade cada fuente y cada extractor como *source set* del módulo y genera un registro con las clases. No hay APKs que instalar ni permisos para verlas.
+- 🌐 **Runtime propio de la API de Aniyomi.** Las fuentes están escritas contra `extensions-lib` v14; Watanuki implementa esa API (`AnimeHttpSource`, modelos, red) con código de Aniyomi y el nuestro.
+- 🎬 **Proxy local para el reproductor.** libVLC solo acepta User-Agent y Referer, así que los vídeos pasan por un servidor HTTP en `127.0.0.1` que reenvía con todas las cabeceras y cookies de la fuente y reescribe las listas HLS.
+- 📦 **Descargas propias.** OkHttp con reanudación por rangos, HLS concatenado a un solo archivo, cola con varios trabajadores y verificación de espacio.
 
-### Build
+### Compilar
 
 ```bash
 git clone https://github.com/Chidaruma696/Watanuki.git
 cd Watanuki
-./gradlew :app:assembleDebug        # APK in app/build/outputs/apk/debug/
+./gradlew :app:assembleDebug        # APK en app/build/outputs/apk/debug/
 ```
 
-Requirements: JDK 17 or later and Android SDK 36. To update the sources to the community's latest state: `tools/update-sources.sh`.
+Requisitos: JDK 17 o superior y el SDK de Android 36. Para actualizar las fuentes al último estado de la comunidad: `tools/update-sources.sh`.
 
 <br/>
 
-## 🗺️ Roadmap
+## 🗺️ Hoja de ruta
 
-- [ ] Library and history with per-episode progress
-- [ ] Player gestures: pinch to zoom, brightness and volume, PiP
-- [ ] Subtitles and audio tracks
-- [ ] Downloading encrypted HLS streams
-- [ ] More source languages (only `es` today)
-- [ ] Sync with AniList and MyAnimeList
+- [ ] Biblioteca e historial con progreso por episodio
+- [ ] Gestos en el reproductor: pinch para zoom, brillo y volumen, PiP
+- [ ] Subtítulos y pistas de audio
+- [ ] Descarga de streams HLS cifrados
+- [ ] Más idiomas de fuentes (hoy solo `es`)
+- [ ] Sincronización con AniList y MyAnimeList
 
 <br/>
 
 ## ⚖️ Legal
 
-Watanuki is distributed under the [Apache 2.0 License](LICENSE). It does not contain or distribute copyrighted content; it accesses third-party sites chosen by the user. Theme names are Touhou Project characters, property of Team Shanghai Alice, with no affiliation whatsoever. All third-party code and libraries, with their licenses, are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Watanuki se distribuye bajo la [licencia Apache 2.0](LICENSE). No contiene ni distribuye contenido con derechos de autor; accede a sitios de terceros que el usuario elige. Los nombres de los temas son personajes de Touhou Project, propiedad de Team Shanghai Alice, sin afiliación alguna. Todo el código y las bibliotecas de terceros, con sus licencias, están en [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Watanuki uses **libVLC** (VideoLAN) under LGPL 2.1, unmodified; its source code is at [code.videolan.org](https://code.videolan.org/videolan/vlc-android).
+Watanuki usa **libVLC** (VideoLAN) bajo LGPL 2.1, sin modificar; su código fuente está en [code.videolan.org](https://code.videolan.org/videolan/vlc-android).
 
 <br/>
 
 ## 📢 Keep Android Open
 
-> **Your phone is about to stop being yours.** [keepandroidopen.org](https://keepandroidopen.org/)
+> **Tu teléfono está a punto de dejar de ser tuyo.** [keepandroidopen.org/es](https://keepandroidopen.org/es/)
 
-In 2025 Google announced **mandatory developer verification**, effective in 2027: anyone publishing an Android app will have to register in a central Google system, pay a fee, and hand over their government ID. Apps from anyone who doesn't register **will be blocked on every certified device in the world**, whether or not they are on the Play Store, F-Droid's included. Installing on your own will become a nine-step process with a 24-hour wait, controlled by Google Play Services and revocable at any time.
+Google anunció en 2025 una **verificación obligatoria de desarrolladores**, en vigor a partir de 2027: quien publique una app para Android tendrá que registrarse en un sistema central de Google, pagar una cuota y entregar su documento de identidad. Las apps de quien no se registre **quedarán bloqueadas en todos los dispositivos certificados del mundo**, estén o no en Play Store, incluidas las de F-Droid. Instalar por tu cuenta pasará a ser un proceso de nueve pasos con 24 horas de espera, controlado por Google Play Services y revocable en cualquier momento.
 
-Let's be clear: **if that goes into effect, Watanuki ceases to exist.** So does Yuko, and any free app that doesn't go through Google's checkout. This project is only possible because Android is still open.
+Que quede claro: **si eso se aplica, Watanuki deja de existir.** Y Yuko, y cualquier app libre que no pase por la caja de Google. Este proyecto solo es posible porque Android todavía es abierto.
 
-That is why the app shows a notice on the Home screen (it can be hidden) and a permanent link under Settings › About. The campaign is backed by 71 organizations from 23 countries (F-Droid, EFF, FSF, Nextcloud, Proton, KDE, Tor Project, LineageOS, GNOME, Brave…). What it asks for is simple:
+Por eso la app muestra un aviso en Inicio (se puede ocultar) y un enlace permanente en Ajustes › Acerca de. La campaña la impulsan 71 organizaciones de 23 países (F-Droid, EFF, FSF, Nextcloud, Proton, KDE, Tor Project, LineageOS, GNOME, Brave…). Lo que pide es sencillo:
 
-- 📲 **Install F-Droid** on every Android device you own.
-- ✍️ **Sign the petition** and share the page.
-- 🏛️ **Write to your competition or consumer protection regulator.**
-- 🧑‍💻 If you're a developer: **don't register**, and convince others not to.
+- 📲 **Instala F-Droid** en cada dispositivo Android que tengas.
+- ✍️ **Firma la petición** y comparte la página.
+- 🏛️ **Escribe a tu regulador** de competencia o protección al consumidor.
+- 🧑‍💻 Si desarrollas: **no te registres**, y convence a otros de no hacerlo.
 
 <br/>
 

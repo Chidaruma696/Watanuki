@@ -52,4 +52,21 @@
 	<string name="parallel_downloads_summary">Cuántos episodios se descargan a la vez</string>
 	<string name="server_timeout">La fuente tardó demasiado en responder. Reintenta o elige un servidor a mano.</string>
 	<string name="choose_manually">Elegir servidor</string>
+	<string name="about">Acerca de</string>
+	<string name="kao_title">Tu teléfono está a punto de dejar de ser tuyo</string>
+	<string name="kao_body">Google quiere exigir desde 2027 que cualquiera que publique apps para Android se registre, pague y entregue su documento de identidad, incluso fuera de Play Store. Si eso ocurre, Watanuki no podrá instalarse en ningún móvil certificado. Watanuki existe porque Android es abierto.</string>
+	<string name="kao_learn">¿Qué puedo hacer?</string>
+	<string name="kao_hide">Ocultar</string>
+	<string name="kao_row_summary">Watanuki dejará de existir si Google impone la verificación de desarrolladores. Toca para ver qué puedes hacer.</string>
+	<string name="kao_show_banner">Mostrar el aviso de Keep Android Open en Inicio</string>
+	<string name="credit_design">Diseño: Komi Store</string>
+	<string name="credit_design_summary">Sistema de diseño "Manga" de kurikomi-labs. Papel, tinta, sellos y tramas vienen de ahí.</string>
+	<string name="credit_sources">Fuentes: Aniyomi (Kohi-den)</string>
+	<string name="credit_sources_summary">Fuentes de la comunidad compiladas dentro de la app, Apache 2.0</string>
+	<string name="credit_player">Reproductor: libVLC</string>
+	<string name="credit_player_summary">VideoLAN, LGPL 2.1, sin modificar</string>
+	<string name="credit_licenses">Licencias de terceros</string>
+	<string name="credit_licenses_summary">Cada biblioteca y su licencia</string>
+	<string name="credit_source_code">Código fuente</string>
+	<string name="credit_source_code_summary">Código abierto bajo Apache 2.0. Apoya a la industria oficial del anime.</string>
 </resources>

@@ -92,6 +92,23 @@ Y si un anime que ves en Watanuki aparece en una plataforma legal en tu país, *
 
 <br/>
 
+## 📢 Keep Android Open
+
+> **Tu teléfono está a punto de dejar de ser tuyo.** [keepandroidopen.org/es](https://keepandroidopen.org/es/)
+
+Google anunció en 2025 una **verificación obligatoria de desarrolladores**, en vigor a partir de 2027: quien publique una app para Android tendrá que registrarse en un sistema central de Google, pagar una cuota y entregar su documento de identidad. Las apps de quien no se registre **quedarán bloqueadas en todos los dispositivos certificados del mundo**, estén o no en Play Store, incluidas las de F-Droid. Instalar por tu cuenta pasará a ser un proceso de nueve pasos con 24 horas de espera, controlado por Google Play Services y revocable en cualquier momento.
+
+Que quede claro: **si eso se aplica, Watanuki deja de existir.** Y Yuko, y cualquier app libre que no pase por la caja de Google. Este proyecto solo es posible porque Android todavía es abierto.
+
+Por eso la app muestra un aviso en Inicio (se puede ocultar) y un enlace permanente en Ajustes › Acerca de. La campaña la impulsan 71 organizaciones de 23 países (F-Droid, EFF, FSF, Nextcloud, Proton, KDE, Tor Project, LineageOS, GNOME, Brave…). Lo que pide es sencillo:
+
+- 📲 **Instala F-Droid** en cada dispositivo Android que tengas.
+- ✍️ **Firma la petición** y comparte la página.
+- 🏛️ **Escribe a tu regulador** de competencia o protección al consumidor.
+- 🧑‍💻 Si desarrollas: **no te registres**, y convence a otros de no hacerlo.
+
+<br/>
+
 ## 🔧 Cómo funciona
 
 ```

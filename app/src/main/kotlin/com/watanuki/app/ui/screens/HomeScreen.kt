@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.watanuki.app.R
+import com.watanuki.app.ui.AppPrefs
 import com.watanuki.app.ui.FeedAnime
 import com.watanuki.app.ui.HomeViewModel
 import com.watanuki.app.ui.komi.KomiButton
@@ -58,6 +59,9 @@ fun HomeScreen(contentPadding: PaddingValues, onOpen: (FeedAnime) -> Unit, onOpe
 		contentPadding = PaddingValues(top = contentPadding.calculateTopPadding() + 4.dp, bottom = contentPadding.calculateBottomPadding() + 32.dp),
 		verticalArrangement = Arrangement.spacedBy(10.dp),
 	) {
+		if (AppPrefs.kaoBannerVisible) {
+			item(key = "kao") { KeepAndroidOpenBanner(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) }
+		}
 		if (state.isLoading) {
 			item(key = "progress") {
 				Column(Modifier.padding(horizontal = 16.dp)) {

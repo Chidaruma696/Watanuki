@@ -23,6 +23,7 @@ import com.watanuki.app.download.DownloadRepository
 import com.watanuki.app.player.PlayerActivity
 import com.watanuki.app.ui.AppPrefs
 import com.watanuki.app.ui.komi.KomiBottomBar
+import com.watanuki.app.ui.komi.KomiIconButton
 import com.watanuki.app.ui.komi.KomiNavItem
 import com.watanuki.app.ui.komi.KomiScaffold
 import com.watanuki.app.ui.komi.KomiTopBar
@@ -30,6 +31,7 @@ import com.watanuki.app.ui.komi.WatanukiTheme
 import com.watanuki.app.ui.screens.BrowseScreen
 import com.watanuki.app.ui.screens.DetailsScreen
 import com.watanuki.app.ui.screens.DownloadsScreen
+import com.watanuki.app.ui.screens.GlobalSearchScreen
 import com.watanuki.app.ui.screens.HomeScreen
 import com.watanuki.app.ui.screens.OnboardingScreen
 import com.watanuki.app.ui.screens.SettingsScreen
@@ -76,7 +78,8 @@ class MainActivity : ComponentActivity() {
 private enum class Tab(val id: String) { HOME("home"), SOURCES("sources"), DOWNLOADS("downloads"), SETTINGS("settings") }
 
 private sealed interface Screen {
-	data class Browse(val source: LoadedSource) : Screen
+	data object Search : Screen
+	data class Browse(val source: LoadedSource, val query: String = "") : Screen
 	data class Details(val source: LoadedSource, val anime: SAnime) : Screen
 }
 
@@ -88,8 +91,14 @@ private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLoc
 	BackHandler(enabled = stack.isNotEmpty()) { stack = stack.dropLast(1) }
 
 	when (current) {
+		is Screen.Search -> GlobalSearchScreen(
+			onOpen = { feed -> stack = stack + Screen.Details(feed.source, feed.anime) },
+			onOpenSource = { src, query -> stack = stack + Screen.Browse(src, query) },
+			onBack = { stack = stack.dropLast(1) },
+		)
 		is Screen.Browse -> BrowseScreen(
 			source = current.source,
+			initialQuery = current.query,
 			onOpen = { anime -> stack = stack + Screen.Details(current.source, anime) },
 			onBack = { stack = stack.dropLast(1) },
 		)
@@ -113,7 +122,20 @@ private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLoc
 				Tab.SETTINGS -> "設定 · ${stringResource(R.string.settings).uppercase()}"
 			}
 			KomiScaffold(
-				topBar = { KomiTopBar(title = stringResource(R.string.app_name), titleAccent = "nuki", subtitle = kicker) },
+				topBar = {
+					KomiTopBar(
+						title = stringResource(R.string.app_name), titleAccent = "nuki", subtitle = kicker,
+						actions = if (tab == Tab.HOME || tab == Tab.SOURCES) {
+							{
+								KomiIconButton(
+									icon = ImageVector.vectorResource(R.drawable.ic_search),
+									contentDescription = stringResource(R.string.global_search),
+									onClick = { stack = stack + Screen.Search },
+								)
+							}
+						} else null,
+					)
+				},
 				bottomBar = { KomiBottomBar(items = items, selectedId = tab.id, onSelect = { id -> tab = Tab.entries.first { it.id == id } }) },
 			) { padding ->
 				when (tab) {

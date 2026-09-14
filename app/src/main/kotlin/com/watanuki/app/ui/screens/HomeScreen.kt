@@ -141,8 +141,9 @@ private fun HeroRow(items: List<FeedAnime>, onOpen: (FeedAnime) -> Unit) {
 	}
 }
 
+/** Horizontal row of covers; shared with the global search. */
 @Composable
-private fun CoverRow(items: List<FeedAnime>, onOpen: (FeedAnime) -> Unit, showSource: Boolean) {
+internal fun CoverRow(items: List<FeedAnime>, onOpen: (FeedAnime) -> Unit, showSource: Boolean) {
 	val colors = LocalPersonality.current.colors
 	LazyRow(contentPadding = PaddingValues(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 		items(items, key = { it.source.id.toString() + it.anime.url }) { item ->

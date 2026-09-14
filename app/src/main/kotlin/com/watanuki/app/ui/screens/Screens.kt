@@ -147,12 +147,14 @@ fun SourcesScreen(contentPadding: PaddingValues, onOpen: (LoadedSource) -> Unit)
 // ---------------------------------------------------------------- browse
 
 @Composable
-fun BrowseScreen(source: LoadedSource, onOpen: (SAnime) -> Unit, onBack: () -> Unit) {
+fun BrowseScreen(source: LoadedSource, onOpen: (SAnime) -> Unit, onBack: () -> Unit, initialQuery: String = "") {
 	val vm = viewModel<BrowseViewModel>()
 	val state by vm.state.collectAsState()
 	val colors = LocalPersonality.current.colors
-	var query by rememberSaveable { mutableStateOf("") }
-	LaunchedEffect(source.id) { vm.open(source) }
+	var query by rememberSaveable { mutableStateOf(initialQuery) }
+	LaunchedEffect(source.id, initialQuery) {
+		if (initialQuery.isNotBlank()) vm.open(source, BrowseMode.SEARCH, initialQuery) else vm.open(source)
+	}
 	val gridState = rememberLazyGridState()
 	val nearEnd by remember {
 		derivedStateOf {

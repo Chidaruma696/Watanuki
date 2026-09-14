@@ -50,7 +50,7 @@ Watanuki is an Android app for watching anime from Spanish-language sites, made 
 
 | 📺 Watch | 📥 Save | 🎨 Live |
 | --- | --- | --- |
-| Home feed with recommendations, latest episodes, and most popular per source | Parallel downloads, per episode or full season, with resume support | Ten palettes inspired by Touhou characters, in light and dark |
+| Home feed with recommendations, latest episodes, and most popular per source, plus a global search across every source at once | Parallel downloads, per episode or full season, with resume support | Ten palettes inspired by Touhou characters, in light and dark |
 | libVLC player: any codec, six scaling modes, quick skips | Queue with progress, retries, and free-space checks | "Manga" design system ported from Komi Store: paper, ink, stamps, and screentones |
 | Automatic pick of the best server, or a manual list | Offline playback of everything you saved | Adult content filter **off by default** from the very first launch |
 

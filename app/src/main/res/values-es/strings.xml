@@ -17,6 +17,16 @@
 	<string name="shuffle">Barajar</string>
 	<string name="latest_episodes">Últimos episodios</string>
 	<string name="see_all">Ver todo</string>
+	<string name="see_more">Ver más</string>
+	<string name="global_search">Buscar en todas las fuentes</string>
+	<string name="global_search_kicker">検索 · TODAS LAS FUENTES</string>
+	<string name="global_search_hint">Título del anime…</string>
+	<string name="global_search_empty">Escribe un título y se buscará en todas las fuentes a la vez.</string>
+	<string name="search_scope_enabled">Mis fuentes</string>
+	<string name="search_scope_all">Todas</string>
+	<string name="search_progress">%1$d/%2$d fuentes respondieron</string>
+	<string name="search_hits">%1$d resultados</string>
+	<string name="search_no_sources">No hay fuentes donde buscar. Activa alguna en Fuentes o cambia a Todas.</string>
 	<string name="in_feed">En el feed de Inicio</string>
 	<string name="onboarding_kicker">初期設定 · PRIMER INICIO</string>
 	<string name="onboarding_title">Antes de empezar</string>

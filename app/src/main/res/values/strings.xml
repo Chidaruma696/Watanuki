@@ -18,6 +18,16 @@
 	<string name="shuffle">Shuffle</string>
 	<string name="latest_episodes">Latest episodes</string>
 	<string name="see_all">See all</string>
+	<string name="see_more">See more</string>
+	<string name="global_search">Search everywhere</string>
+	<string name="global_search_kicker">検索 · EVERY SOURCE</string>
+	<string name="global_search_hint">Anime title…</string>
+	<string name="global_search_empty">Type a title and it will be searched in every source at once.</string>
+	<string name="search_scope_enabled">My sources</string>
+	<string name="search_scope_all">All</string>
+	<string name="search_progress">%1$d/%2$d sources answered</string>
+	<string name="search_hits">%1$d hits</string>
+	<string name="search_no_sources">No sources to search. Turn some on in Sources or switch to All.</string>
 	<string name="in_feed">In Home feed</string>
 	<string name="onboarding_kicker">初期設定 · FIRST START</string>
 	<string name="onboarding_title">Before you start</string>

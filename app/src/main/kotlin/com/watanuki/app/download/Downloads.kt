@@ -17,11 +17,13 @@ import androidx.core.app.NotificationCompat
 import com.watanuki.app.MainActivity
 import com.watanuki.app.R
 import com.watanuki.app.ui.AppPrefs
+import com.watanuki.app.ui.VideoQuality
 import com.watanuki.sources.AnimeSources
 import com.watanuki.sources.LoadedSource
 import com.watanuki.sources.SourcesRuntime
 import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +44,10 @@ import java.io.FileOutputStream
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
+/** Where else an episode lives, enough to ask that site for its servers. */
+@Serializable
+data class EpisodeCopyRef(val sourceId: Long, val episodeUrl: String, val episodeName: String, val episodeNumber: Float)
+
 /** One saved (or in-progress) episode. [url] is empty until the service resolves the video. */
 @Serializable
 data class DownloadItem(
@@ -61,6 +67,8 @@ data class DownloadItem(
 	val episodeUrl: String? = null,
 	val episodeNumber: Float = -1f,
 	val addedAt: Long = System.currentTimeMillis(),
+	/** The same episode on other sites, tried in order when the first one has no working server. */
+	val alternates: List<EpisodeCopyRef> = emptyList(),
 ) {
 	/** Same source + episode means the same download, whatever the server picked. */
 	val key: String get() = "$sourceId|${episodeUrl ?: url}"
@@ -104,7 +112,7 @@ object DownloadRepository {
 		items.value.firstOrNull { it.sourceId == source.id && it.episodeUrl == episode.url }
 
 	/** Queues an episode; the video link is resolved by the service. Returns null if already queued or saved. */
-	fun enqueueEpisode(source: LoadedSource, anime: SAnime, episode: SEpisode): DownloadItem? = synchronized(lock) {
+	fun enqueueEpisode(source: LoadedSource, anime: SAnime, episode: SEpisode, alternates: List<EpisodeCopyRef> = emptyList()): DownloadItem? = synchronized(lock) {
 		val existing = find(source, episode)
 		if (existing != null && existing.status != DownloadItem.STATUS_FAILED) return null
 		if (existing != null) removeInternal(existing)
@@ -121,6 +129,7 @@ object DownloadRepository {
 			sourceId = source.id,
 			episodeUrl = episode.url,
 			episodeNumber = episode.episode_number,
+			alternates = alternates,
 		)
 		items.update { it + item }
 		persist()
@@ -210,9 +219,7 @@ class DownloadService : Service() {
 			while (true) {
 				val item = DownloadRepository.claimNext() ?: break
 				try {
-					val resolved = resolveIfNeeded(item)
-					checkSpace(resolved)
-					download(resolved)
+					downloadFromAnyServer(item)
 					DownloadRepository.update(item.id) { it.copy(status = DownloadItem.STATUS_DONE) }
 				} catch (e: Throwable) {
 					if (e is kotlinx.coroutines.CancellationException) throw e
@@ -228,23 +235,63 @@ class DownloadService : Service() {
 		}
 	}
 
-	/** Items queued from "download season" carry no link yet: ask the source for the servers now. */
-	private suspend fun resolveIfNeeded(item: DownloadItem): DownloadItem {
-		if (item.url.isNotBlank()) return item
-		val source = item.sourceId?.let { AnimeSources.byId(it) } ?: error("Fuente no disponible")
-		val episode = SEpisode.create().apply { url = item.episodeUrl.orEmpty(); name = item.episodeName; episode_number = item.episodeNumber }
-		notify(buildNotification("${item.animeTitle} · ${item.episodeName}", getString(R.string.download_resolving), 0, true))
-		val videos = withTimeout(RESOLVE_TIMEOUT) { source.source.getVideoList(episode) }
-		val video = videos.firstOrNull { !it.videoUrl.isNullOrBlank() || it.url.isNotBlank() } ?: error("Sin servidores disponibles")
-		val url = video.videoUrl ?: video.url
-		val headers = buildMap {
-			video.headers?.forEach { (k, v) -> put(k, v) }
-			(source.source as? AnimeHttpSource)?.baseUrl?.let { if (!containsKey("Referer")) put("Referer", it) }
+	/**
+	 * Every server the source offers for this episode, best quality first (see [VideoQuality]).
+	 * An item queued with a concrete link the user picked is left alone.
+	 */
+	private suspend fun serversFor(item: DownloadItem): List<DownloadItem> {
+		if (item.url.isNotBlank()) return listOf(item)
+		val own = item.sourceId?.let { EpisodeCopyRef(it, item.episodeUrl.orEmpty(), item.episodeName, item.episodeNumber) } ?: error("Fuente no disponible")
+		notify(buildNotification("${item.animeTitle} \u00b7 ${item.episodeName}", getString(R.string.download_resolving), 0, true))
+		val found = ArrayList<Pair<Video, LoadedSource>>()
+		for (ref in listOf(own) + item.alternates) {
+			val source = AnimeSources.byId(ref.sourceId) ?: continue
+			val episode = SEpisode.create().apply { url = ref.episodeUrl; name = ref.episodeName; episode_number = ref.episodeNumber }
+			val videos = try {
+				withTimeout(RESOLVE_TIMEOUT) { source.source.getVideoList(episode) }
+			} catch (e: kotlinx.coroutines.CancellationException) {
+				throw e
+			} catch (e: Throwable) {
+				Log.w("Downloads", "${source.name} gave no servers for ${item.episodeName}", e)
+				continue
+			}
+			videos.filter { !it.videoUrl.isNullOrBlank() || it.url.isNotBlank() }.forEach { found += it to source }
 		}
-		val isHls = url.substringBefore('?').endsWith(".m3u8", true)
-		val resolved = item.copy(url = url, headers = headers, fileName = item.fileName.substringBeforeLast('.') + if (isHls) ".ts" else ".mp4")
-		DownloadRepository.update(item.id) { resolved.copy(status = DownloadItem.STATUS_RUNNING) }
-		return resolved
+		if (found.isEmpty()) error("Sin servidores disponibles")
+		return found.sortedWith(compareBy(VideoQuality.comparator()) { it.first }).map { (video, source) ->
+			val url = video.videoUrl ?: video.url
+			val headers = buildMap {
+				video.headers?.forEach { (k, v) -> put(k, v) }
+				// only if the extractor set none: it may spell it "referer", and the CDN rejects ours
+				(source.source as? AnimeHttpSource)?.baseUrl?.let { base ->
+					if (keys.none { it.equals("Referer", ignoreCase = true) }) put("Referer", base)
+				}
+			}
+			val isHls = url.substringBefore('?').endsWith(".m3u8", true)
+			item.copy(url = url, headers = headers, fileName = item.fileName.substringBeforeLast('.') + if (isHls) ".ts" else ".mp4")
+		}
+	}
+
+	/** Walks the servers in quality order; the first one that downloads wins, the last error is reported. */
+	private suspend fun downloadFromAnyServer(item: DownloadItem) {
+		val servers = serversFor(item)
+		var last: Throwable? = null
+		for ((index, candidate) in servers.withIndex()) {
+			try {
+				DownloadRepository.update(item.id) { candidate.copy(status = DownloadItem.STATUS_RUNNING, bytes = 0, total = -1, error = null) }
+				checkSpace(candidate)
+				download(candidate)
+				return
+			} catch (e: kotlinx.coroutines.CancellationException) {
+				throw e
+			} catch (e: Throwable) {
+				last = e
+				Log.w("Downloads", "server ${index + 1}/${servers.size} failed for ${item.episodeName}: ${candidate.url}", e)
+				// a half file from a dead server must not be resumed against the next one
+				DownloadRepository.file(candidate).delete()
+			}
+		}
+		throw last ?: IllegalStateException("Sin servidores disponibles")
 	}
 
 	private fun checkSpace(item: DownloadItem) {

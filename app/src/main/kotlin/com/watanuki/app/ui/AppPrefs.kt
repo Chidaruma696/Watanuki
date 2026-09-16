@@ -19,6 +19,9 @@ object AppPrefs {
 		private set
 	var autoSelectServer by mutableStateOf(true)
 		private set
+	/** Resolution to reach for when a server is picked automatically; see [VideoQuality]. */
+	var preferredQuality by mutableStateOf(VideoQuality.AUTO)
+		private set
 	var parallelDownloads by mutableStateOf(2)
 		private set
 	/** Keep Android Open notice on Home; hidden once the user dismisses it, can be shown again from Settings. */
@@ -30,6 +33,7 @@ object AppPrefs {
 		onboardingDone = p.getBoolean("onboarding_done", false)
 		showAdult = p.getBoolean("show_adult", false)
 		autoSelectServer = p.getBoolean("auto_server", true)
+		preferredQuality = p.getString("preferred_quality", VideoQuality.AUTO) ?: VideoQuality.AUTO
 		parallelDownloads = p.getInt("parallel_downloads", 2)
 		kaoBannerVisible = p.getBoolean("kao_banner", true)
 	}
@@ -40,6 +44,7 @@ object AppPrefs {
 	fun updateShowAdult(value: Boolean) { showAdult = value; prefs().edit { putBoolean("show_adult", value) } }
 	fun updateParallelDownloads(value: Int) { parallelDownloads = value.coerceIn(1, 4); prefs().edit { putInt("parallel_downloads", parallelDownloads) } }
 	fun updateKaoBanner(value: Boolean) { kaoBannerVisible = value; prefs().edit { putBoolean("kao_banner", value) } }
+	fun updatePreferredQuality(value: String) { preferredQuality = value; prefs().edit { putString("preferred_quality", value) } }
 	fun updateAutoSelectServer(value: Boolean) { autoSelectServer = value; prefs().edit { putBoolean("auto_server", value) } }
 
 	private val adultWords = listOf("hentai", "ecchi", "+18", "18+", "adulto", "adult", "yaoi hard", "smut", "erótico", "erotico", "porn")

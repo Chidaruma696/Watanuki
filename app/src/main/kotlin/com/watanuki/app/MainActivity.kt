@@ -23,6 +23,9 @@ import com.watanuki.app.download.DownloadRepository
 import com.watanuki.app.player.PlayerActivity
 import com.watanuki.app.ui.AppPrefs
 import com.watanuki.app.ui.komi.KomiBottomBar
+import com.watanuki.app.ui.komi.KomiButtonVariant
+import com.watanuki.app.ui.komi.KomiButtonSize
+import com.watanuki.app.ui.komi.KomiButton
 import com.watanuki.app.ui.komi.KomiIconButton
 import com.watanuki.app.ui.komi.KomiNavItem
 import com.watanuki.app.ui.komi.KomiScaffold
@@ -31,7 +34,12 @@ import com.watanuki.app.ui.komi.WatanukiTheme
 import com.watanuki.app.ui.screens.BrowseScreen
 import com.watanuki.app.ui.screens.DetailsScreen
 import com.watanuki.app.ui.screens.DownloadsScreen
+import com.watanuki.app.catalog.CatalogAnime
+import com.watanuki.app.catalog.CatalogSeries
+import com.watanuki.app.catalog.SourceMatch
 import com.watanuki.app.ui.screens.GlobalSearchScreen
+import com.watanuki.app.ui.screens.SeasonScreen
+import com.watanuki.app.ui.screens.SeriesScreen
 import com.watanuki.app.ui.screens.HomeScreen
 import com.watanuki.app.ui.screens.OnboardingScreen
 import com.watanuki.app.ui.screens.SettingsScreen
@@ -58,8 +66,8 @@ class MainActivity : ComponentActivity() {
 		}
 	}
 
-	private fun play(source: LoadedSource, title: String, video: Video) {
-		startActivity(PlayerActivity.intent(this, title, video, (source.source as? AnimeHttpSource)?.baseUrl))
+	private fun play(source: LoadedSource?, title: String, videos: List<Video>) {
+		startActivity(PlayerActivity.intent(this, title, videos, (source?.source as? AnimeHttpSource)?.baseUrl))
 	}
 
 	private fun playLocal(item: DownloadItem) {
@@ -75,16 +83,19 @@ class MainActivity : ComponentActivity() {
 	}
 }
 
-private enum class Tab(val id: String) { HOME("home"), SOURCES("sources"), DOWNLOADS("downloads"), SETTINGS("settings") }
+private enum class Tab(val id: String) { HOME("home"), DOWNLOADS("downloads"), SETTINGS("settings") }
 
 private sealed interface Screen {
-	data object Search : Screen
+	data class Search(val query: String = "", val bySource: Boolean = false) : Screen
+	data object Sources : Screen
+	data class Series(val series: CatalogSeries) : Screen
+	data class Season(val season: CatalogAnime, val hits: List<SourceMatch.Hit>) : Screen
 	data class Browse(val source: LoadedSource, val query: String = "") : Screen
 	data class Details(val source: LoadedSource, val anime: SAnime) : Screen
 }
 
 @Composable
-private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLocal: (DownloadItem) -> Unit) {
+private fun WatanukiNav(onPlay: (LoadedSource?, String, List<Video>) -> Unit, onPlayLocal: (DownloadItem) -> Unit) {
 	var tab by remember { mutableStateOf(Tab.HOME) }
 	var stack by remember { mutableStateOf<List<Screen>>(emptyList()) }
 	val current = stack.lastOrNull()
@@ -92,8 +103,31 @@ private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLoc
 
 	when (current) {
 		is Screen.Search -> GlobalSearchScreen(
+			initialQuery = current.query,
+			bySource = current.bySource,
 			onOpen = { feed -> stack = stack + Screen.Details(feed.source, feed.anime) },
 			onOpenSource = { src, query -> stack = stack + Screen.Browse(src, query) },
+			onOpenSeries = { series -> stack = stack + Screen.Series(series) },
+			onBack = { stack = stack.dropLast(1) },
+		)
+		is Screen.Season -> SeasonScreen(
+			season = current.season,
+			hits = current.hits,
+			onPlay = { title, videos -> onPlay(null, title, videos) },
+			onBack = { stack = stack.dropLast(1) },
+		)
+		is Screen.Sources -> KomiScaffold(
+			topBar = {
+				KomiTopBar(
+					title = stringResource(R.string.sources), subtitle = "配信 · ${stringResource(R.string.sources_kicker)}",
+					leading = { KomiButton(onClick = { stack = stack.dropLast(1) }, label = "‹", size = KomiButtonSize.Sm, variant = KomiButtonVariant.Outline) },
+				)
+			},
+		) { padding -> SourcesScreen(contentPadding = padding, onOpen = { stack = stack + Screen.Browse(it) }) }
+		is Screen.Series -> SeriesScreen(
+			series = current.series,
+			onOpenSeason = { season, hits -> stack = stack + Screen.Season(season, hits) },
+			onSearchBySource = { title -> stack = stack + Screen.Search(query = title, bySource = true) },
 			onBack = { stack = stack.dropLast(1) },
 		)
 		is Screen.Browse -> BrowseScreen(
@@ -105,19 +139,17 @@ private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLoc
 		is Screen.Details -> DetailsScreen(
 			source = current.source,
 			anime = current.anime,
-			onPlay = { title, video -> onPlay(current.source, title, video) },
+			onPlay = { title, videos -> onPlay(current.source, title, videos) },
 			onBack = { stack = stack.dropLast(1) },
 		)
 		null -> {
 			val items = listOf(
 				KomiNavItem(Tab.HOME.id, stringResource(R.string.home), ImageVector.vectorResource(R.drawable.ic_home)),
-				KomiNavItem(Tab.SOURCES.id, stringResource(R.string.sources), ImageVector.vectorResource(R.drawable.ic_sources)),
 				KomiNavItem(Tab.DOWNLOADS.id, stringResource(R.string.downloads), ImageVector.vectorResource(R.drawable.ic_downloads)),
 				KomiNavItem(Tab.SETTINGS.id, stringResource(R.string.settings), ImageVector.vectorResource(R.drawable.ic_settings)),
 			)
 			val kicker = when (tab) {
 				Tab.HOME -> "今日 · ${stringResource(R.string.for_you).uppercase()}"
-				Tab.SOURCES -> "配信 · ${stringResource(R.string.sources).uppercase()}"
 				Tab.DOWNLOADS -> "保存 · ${stringResource(R.string.downloads).uppercase()}"
 				Tab.SETTINGS -> "設定 · ${stringResource(R.string.settings).uppercase()}"
 			}
@@ -125,12 +157,12 @@ private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLoc
 				topBar = {
 					KomiTopBar(
 						title = stringResource(R.string.app_name), titleAccent = "nuki", subtitle = kicker,
-						actions = if (tab == Tab.HOME || tab == Tab.SOURCES) {
+						actions = if (tab == Tab.HOME) {
 							{
 								KomiIconButton(
 									icon = ImageVector.vectorResource(R.drawable.ic_search),
 									contentDescription = stringResource(R.string.global_search),
-									onClick = { stack = stack + Screen.Search },
+									onClick = { stack = stack + Screen.Search() },
 								)
 							}
 						} else null,
@@ -144,9 +176,8 @@ private fun WatanukiNav(onPlay: (LoadedSource, String, Video) -> Unit, onPlayLoc
 						onOpen = { feed -> stack = stack + Screen.Details(feed.source, feed.anime) },
 						onOpenSource = { src -> stack = stack + Screen.Browse(src) },
 					)
-					Tab.SOURCES -> SourcesScreen(contentPadding = padding, onOpen = { stack = stack + Screen.Browse(it) })
 					Tab.DOWNLOADS -> DownloadsScreen(contentPadding = padding, onPlay = onPlayLocal)
-					Tab.SETTINGS -> SettingsScreen(contentPadding = padding, onOpenDownloads = { tab = Tab.DOWNLOADS })
+					Tab.SETTINGS -> SettingsScreen(contentPadding = padding, onOpenDownloads = { tab = Tab.DOWNLOADS }, onOpenSources = { stack = stack + Screen.Sources })
 				}
 			}
 		}

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.watanuki.app.BuildConfig
 import com.watanuki.app.R
 import com.watanuki.app.ui.AppPrefs
+import com.watanuki.app.ui.VideoQuality
 import com.watanuki.app.ui.komi.KomiCheckbox
 import com.watanuki.app.ui.komi.KomiListContainer
 import com.watanuki.app.ui.komi.KomiListRow
@@ -29,7 +30,7 @@ import com.watanuki.app.ui.komi.LocalPersonality
 
 /** Settings: appearance (Touhou palettes, mode), content, playback, storage. */
 @Composable
-fun SettingsScreen(contentPadding: PaddingValues, onOpenDownloads: () -> Unit) {
+fun SettingsScreen(contentPadding: PaddingValues, onOpenDownloads: () -> Unit, onOpenSources: () -> Unit) {
 	val colors = LocalPersonality.current.colors
 	Column(
 		modifier = Modifier
@@ -52,8 +53,25 @@ fun SettingsScreen(contentPadding: PaddingValues, onOpenDownloads: () -> Unit) {
 				title = stringResource(R.string.auto_server),
 				subtitle = stringResource(R.string.auto_server_summary),
 				onClick = { AppPrefs.updateAutoSelectServer(!AppPrefs.autoSelectServer) },
+				showDivider = true,
 				trailing = { KomiCheckbox(checked = AppPrefs.autoSelectServer, onCheckedChange = { AppPrefs.updateAutoSelectServer(it) }) },
 			)
+			KomiListRow(
+				title = stringResource(R.string.preferred_quality),
+				subtitle = stringResource(R.string.preferred_quality_summary),
+			)
+			KomiSegmented(
+				selected = AppPrefs.preferredQuality,
+				items = VideoQuality.options.map { KomiSegmentedItem(it, if (it == VideoQuality.AUTO) stringResource(R.string.quality_auto) else "${it}p") },
+				onSelect = { AppPrefs.updatePreferredQuality(it) },
+				modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp).padding(bottom = 12.dp),
+				height = 34.dp,
+			)
+		}
+
+		KomiSectionHead(label = stringResource(R.string.sources), kicker = "配信")
+		KomiListContainer {
+			KomiListRow(title = stringResource(R.string.sources), subtitle = stringResource(R.string.sources_summary), onClick = onOpenSources)
 		}
 
 		KomiSectionHead(label = stringResource(R.string.downloads), kicker = "保存")

@@ -88,7 +88,11 @@ fun DownloadsScreen(contentPadding: PaddingValues, onPlay: (DownloadItem) -> Uni
 					if (item.status == DownloadItem.STATUS_FAILED) {
 						KomiButton(
 							onClick = {
-								DownloadRepository.update(item.id) { it.copy(status = DownloadItem.STATUS_QUEUED, error = null) }
+								// these CDN links die within minutes, so a retry asks the source for a fresh one
+							DownloadRepository.update(item.id) {
+								if (it.episodeUrl != null && it.sourceId != null) it.copy(status = DownloadItem.STATUS_QUEUED, error = null, url = "", headers = emptyMap())
+								else it.copy(status = DownloadItem.STATUS_QUEUED, error = null)
+							}
 								DownloadService.start(context)
 							},
 							label = stringResource(R.string.retry), size = KomiButtonSize.Sm,

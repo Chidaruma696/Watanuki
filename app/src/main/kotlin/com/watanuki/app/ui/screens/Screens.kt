@@ -55,8 +55,10 @@ import com.watanuki.app.ui.BrowseViewModel
 import com.watanuki.app.download.DownloadItem
 import com.watanuki.app.download.DownloadRepository
 import com.watanuki.app.download.DownloadService
+import com.watanuki.app.download.humanSize
 import com.watanuki.app.ui.DetailsViewModel
 import com.watanuki.app.ui.SourcePrefs
+import com.watanuki.app.ui.VideoQuality
 import com.watanuki.app.ui.SourcesViewModel
 import com.watanuki.app.ui.komi.KomiBadge
 import com.watanuki.app.ui.komi.KomiBadgeTone
@@ -68,6 +70,7 @@ import com.watanuki.app.ui.komi.KomiChip
 import com.watanuki.app.ui.komi.KomiCheckbox
 import com.watanuki.app.ui.komi.KomiChipKind
 import com.watanuki.app.ui.komi.KomiCircularProgress
+import com.watanuki.app.ui.komi.KomiLinearProgress
 import com.watanuki.app.ui.komi.KomiListContainer
 import com.watanuki.app.ui.komi.KomiListRow
 import com.watanuki.app.ui.komi.KomiScaffold
@@ -85,10 +88,15 @@ import com.watanuki.app.ui.komi.LocalPersonality
 import com.watanuki.app.ui.komi.screentoneFill
 import com.watanuki.sources.LoadedSource
 import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 
 private fun LoadedSource.baseUrl(): String? = (source as? AnimeHttpSource)?.baseUrl
+
+/** Sources list episodes newest first; a whole-season queue goes 1 -> last instead. */
+private fun List<SEpisode>.inDownloadOrder(): List<SEpisode> =
+	if (any { it.episode_number >= 0f }) sortedBy { it.episode_number } else reversed()
 
 // ---------------------------------------------------------------- sources
 
@@ -236,7 +244,7 @@ fun BrowseScreen(source: LoadedSource, onOpen: (SAnime) -> Unit, onBack: () -> U
 // ---------------------------------------------------------------- details
 
 @Composable
-fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, Video) -> Unit, onBack: () -> Unit) {
+fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, List<Video>) -> Unit, onBack: () -> Unit) {
 	val vm = viewModel<DetailsViewModel>()
 	val state by vm.state.collectAsState()
 	val colors = LocalPersonality.current.colors
@@ -291,7 +299,7 @@ fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, Video) -
 						{
 							KomiButton(
 								onClick = {
-									val queued = state.episodes.count { ep -> DownloadRepository.enqueueEpisode(source, details, ep) != null }
+									val queued = state.episodes.inDownloadOrder().count { ep -> DownloadRepository.enqueueEpisode(source, details, ep) != null }
 									if (queued > 0) DownloadService.start(context)
 									android.widget.Toast.makeText(context, context.getString(R.string.download_season_queued, queued), android.widget.Toast.LENGTH_SHORT).show()
 								},
@@ -312,17 +320,26 @@ fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, Video) -
 				else -> item {
 					KomiListContainer {
 						state.episodes.forEachIndexed { index, ep ->
+							val download = downloads.firstOrNull { it.sourceId == source.id && it.episodeUrl == ep.url }
+							val active = download?.takeIf { it.status == DownloadItem.STATUS_RUNNING || it.status == DownloadItem.STATUS_QUEUED }
+							val progressText = when {
+								active == null -> null
+								active.status == DownloadItem.STATUS_QUEUED -> stringResource(R.string.download_queued)
+								active.total > 0 -> "${active.bytes * 100 / active.total} % · ${humanSize(active.bytes)}"
+								active.url.isBlank() -> stringResource(R.string.download_resolving)
+								else -> humanSize(active.bytes)
+							}
 							KomiListRow(
 								title = ep.name,
-								subtitle = ep.scanlator,
+								subtitle = progressText ?: ep.scanlator,
 								onClick = { vm.loadVideos(ep, autoPlay = AppPrefs.autoSelectServer) },
 								onLongClick = { vm.loadVideos(ep, autoPlay = false) },
-								showDivider = index < state.episodes.lastIndex,
+								// while it downloads the bar below takes over as the separator
+								showDivider = index < state.episodes.lastIndex && active == null,
 								trailing = {
 									val context = LocalContext.current
-									val existing = downloads.firstOrNull { it.sourceId == source.id && it.episodeUrl == ep.url }
 									Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-										when (existing?.status) {
+										when (download?.status) {
 											DownloadItem.STATUS_DONE -> KomiBadge(text = "✓", tone = KomiBadgeTone.Neutral)
 											DownloadItem.STATUS_RUNNING, DownloadItem.STATUS_QUEUED -> KomiBadge(text = "…", tone = KomiBadgeTone.Neutral)
 											else -> KomiButton(
@@ -339,6 +356,15 @@ fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, Video) -
 									}
 								},
 							)
+							if (active != null) {
+								KomiLinearProgress(
+									modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp).padding(bottom = 10.dp),
+									progress = if (active.status == DownloadItem.STATUS_RUNNING && active.total > 0) ({ (active.bytes.toFloat() / active.total).coerceIn(0f, 1f) }) else null,
+								)
+								if (index < state.episodes.lastIndex) {
+									Box(Modifier.fillMaxWidth().height(2.dp).background(colors.outline))
+								}
+							}
 						}
 					}
 				}
@@ -351,7 +377,7 @@ fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, Video) -
 		LaunchedEffect(video) {
 			val ep = state.videosFor
 			vm.consumeAutoPlay()
-			if (ep != null) onPlay("${details.title} · ${ep.name}", video)
+			if (ep != null) onPlay("${details.title} · ${ep.name}", state.videos.orEmpty().ifEmpty { listOf(video) })
 		}
 	}
 
@@ -394,16 +420,18 @@ fun DetailsScreen(source: LoadedSource, anime: SAnime, onPlay: (String, Video) -
 					val videos = state.videos.orEmpty()
 					videos.forEachIndexed { index, video ->
 						KomiListRow(
-							title = video.quality,
-							subtitle = (video.videoUrl ?: video.url).substringAfter("://").substringBefore("/"),
-							onClick = { vm.dismissVideos(); onPlay("${details.title} · ${forEpisode.name}", video) },
+							title = VideoQuality.label(video),
+							subtitle = VideoQuality.server(video),
+							onClick = { vm.dismissVideos(); onPlay("${details.title} · ${forEpisode.name}", listOf(video) + videos.filter { it !== video }) },
 							showDivider = index < videos.lastIndex,
 							trailing = {
 								KomiButton(
 									onClick = {
 										val headers = buildMap {
 											video.headers?.forEach { (k, v) -> put(k, v) }
-											source.baseUrl()?.let { if (!containsKey("Referer")) put("Referer", it) }
+											source.baseUrl()?.let { base ->
+												if (keys.none { it.equals("Referer", ignoreCase = true) }) put("Referer", base)
+											}
 										}
 										val queued = DownloadRepository.enqueue(source, details, forEpisode, video.videoUrl ?: video.url, headers)
 										if (queued != null) {

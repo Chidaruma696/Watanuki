@@ -27,6 +27,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -52,13 +53,20 @@ import com.watanuki.app.ui.komi.KomiText
 import com.watanuki.app.ui.komi.KomiTextRole
 import com.watanuki.app.ui.komi.WatanukiTheme
 import com.watanuki.sources.SourcesRuntime
+import com.watanuki.app.ui.VideoQuality
 import eu.kanade.tachiyomi.animesource.model.Video
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.delay
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.util.VLCVideoLayout
 import java.util.Locale
+
+/** One server for an episode: where it is and what it needs to be fetched. */
+@Serializable
+data class PlayableServer(val url: String, val headers: Map<String, String>, val label: String)
 
 /**
  * libVLC-backed player. Streams go through [StreamProxy] so every header and cookie the
@@ -69,6 +77,10 @@ class PlayerActivity : ComponentActivity() {
 	private lateinit var libVlc: LibVLC
 	private lateinit var player: MediaPlayer
 	private var proxy: StreamProxy? = null
+	private var servers: List<PlayableServer> = emptyList()
+	private var index = 0
+	private val label = mutableStateOf("")
+	private val current: PlayableServer get() = servers[index]
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -79,43 +91,62 @@ class PlayerActivity : ComponentActivity() {
 			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 		}
 
-		val url = intent.getStringExtra(EXTRA_URL) ?: run { finish(); return }
 		val title = intent.getStringExtra(EXTRA_TITLE).orEmpty()
-		val headers = intent.getStringArrayExtra(EXTRA_HEADERS).orEmpty().toList().chunked(2).associate { it[0] to it[1] }
-			.toMutableMap()
-		if (headers.keys.none { it.equals("User-Agent", true) }) {
-			headers["User-Agent"] = SourcesRuntime.network.defaultUserAgentProvider()
-		}
-
-		val isLocal = url.startsWith("/") || url.startsWith("file:")
-		val playUrl = if (isLocal) {
-			url
-		} else try {
-			proxy = StreamProxy().also { it.start(NANO_TIMEOUT, false) }
-			proxy!!.proxiedUrl(url, headers)
-		} catch (e: Exception) {
-			Log.w(TAG, "proxy unavailable, playing direct", e)
-			url
-		}
-		Log.i(TAG, "play $url via $playUrl headers=${headers.keys}")
+		servers = intent.getStringExtra(EXTRA_SERVERS)
+			?.let { runCatching { Json.decodeFromString<List<PlayableServer>>(it) }.getOrNull() }
+			?: intent.getStringExtra(EXTRA_URL)?.let { listOf(PlayableServer(it, emptyMap(), "")) }
+			?: run { finish(); return }
+		if (servers.isEmpty()) { finish(); return }
 
 		val options = arrayListOf("--http-reconnect", "--network-caching=4000")
 		if (BuildConfig.DEBUG) options += "-vv"
 		libVlc = LibVLC(this, options)
 		player = MediaPlayer(libVlc)
-		val media = (if (isLocal) Media(libVlc, playUrl.removePrefix("file://")) else Media(libVlc, Uri.parse(playUrl))).apply {
-			setHWDecoderEnabled(true, false)
-			headers["User-Agent"]?.let { addOption(":http-user-agent=$it") }
-			headers["Referer"]?.let { addOption(":http-referrer=$it") }
-		}
-		player.media = media
-		media.release()
+		load(0, autoplay = false)
 
 		setContent {
 			WatanukiTheme {
-				PlayerScreen(player = player, title = title, onClose = { finish() })
+				PlayerScreen(
+					player = player,
+					title = title,
+					serverLabel = label,
+					hasNext = { index < servers.lastIndex },
+					onNextServer = { load(index + 1, autoplay = true) },
+					onClose = { finish() },
+				)
 			}
 		}
+	}
+
+	/** Points the player at server [i], through the proxy so its headers and cookies survive. */
+	private fun load(i: Int, autoplay: Boolean) {
+		index = i.coerceIn(0, servers.lastIndex)
+		val server = current
+		val headers = server.headers.toMutableMap()
+		if (headers.keys.none { it.equals("User-Agent", true) }) {
+			headers["User-Agent"] = SourcesRuntime.network.defaultUserAgentProvider()
+		}
+		val isLocal = server.url.startsWith("/") || server.url.startsWith("file:")
+		proxy?.stop()
+		proxy = null
+		val playUrl = if (isLocal) server.url else try {
+			proxy = StreamProxy().also { it.start(NANO_TIMEOUT, false) }
+			proxy!!.proxiedUrl(server.url, headers)
+		} catch (e: Exception) {
+			Log.w(TAG, "proxy unavailable, playing direct", e)
+			server.url
+		}
+		Log.i(TAG, "play ${server.url} via $playUrl headers=${headers.keys}")
+		val media = (if (isLocal) Media(libVlc, playUrl.removePrefix("file://")) else Media(libVlc, Uri.parse(playUrl))).apply {
+			setHWDecoderEnabled(true, false)
+			headers.entries.firstOrNull { it.key.equals("User-Agent", true) }?.let { addOption(":http-user-agent=${it.value}") }
+			headers.entries.firstOrNull { it.key.equals("Referer", true) }?.let { addOption(":http-referrer=${it.value}") }
+		}
+		player.stop()
+		player.media = media
+		media.release()
+		label.value = server.label
+		if (autoplay) player.play()
 	}
 
 	override fun onPause() {
@@ -139,21 +170,24 @@ class PlayerActivity : ComponentActivity() {
 		private const val NANO_TIMEOUT = 30_000
 		private const val EXTRA_URL = "url"
 		private const val EXTRA_TITLE = "title"
-		private const val EXTRA_HEADERS = "headers"
+		private const val EXTRA_SERVERS = "servers"
 
 		fun localIntent(context: Context, title: String, path: String): Intent =
 			Intent(context, PlayerActivity::class.java).putExtra(EXTRA_URL, path).putExtra(EXTRA_TITLE, title)
 
-		fun intent(context: Context, title: String, video: Video, referer: String?): Intent {
-			val headers = ArrayList<String>()
-			video.headers?.forEach { (k, v) -> headers += k; headers += v }
-			if (referer != null && video.headers?.get("Referer") == null) {
-				headers += "Referer"; headers += referer
+		/** [videos] in the order to try them: the first that opens plays, the rest are the fallback. */
+		fun intent(context: Context, title: String, videos: List<Video>, referer: String?): Intent {
+			val servers = videos.map { video ->
+				val headers = buildMap {
+					video.headers?.forEach { (k, v) -> put(k, v) }
+					// only if the extractor set none: it may spell it "referer", and the host rejects ours
+					if (referer != null && keys.none { it.equals("Referer", ignoreCase = true) }) put("Referer", referer)
+				}
+				PlayableServer(video.videoUrl ?: video.url, headers, VideoQuality.label(video))
 			}
 			return Intent(context, PlayerActivity::class.java)
-				.putExtra(EXTRA_URL, video.videoUrl ?: video.url)
+				.putExtra(EXTRA_SERVERS, Json.encodeToString(servers))
 				.putExtra(EXTRA_TITLE, title)
-				.putExtra(EXTRA_HEADERS, headers.toTypedArray())
 		}
 	}
 }
@@ -168,7 +202,7 @@ private val ScaleModes = listOf(
 )
 
 @Composable
-private fun PlayerScreen(player: MediaPlayer, title: String, onClose: () -> Unit) {
+private fun PlayerScreen(player: MediaPlayer, title: String, serverLabel: State<String>, hasNext: () -> Boolean, onNextServer: () -> Unit, onClose: () -> Unit) {
 	var controlsVisible by remember { mutableStateOf(true) }
 	var isPlaying by remember { mutableStateOf(false) }
 	var position by remember { mutableFloatStateOf(0f) }
@@ -188,7 +222,11 @@ private fun PlayerScreen(player: MediaPlayer, title: String, onClose: () -> Unit
 				MediaPlayer.Event.PositionChanged -> position = event.positionChanged
 				MediaPlayer.Event.TimeChanged -> timeMs = event.timeChanged
 				MediaPlayer.Event.LengthChanged -> length = event.lengthChanged
-				MediaPlayer.Event.EncounteredError -> { buffering = false; error = "VLC no pudo abrir el vídeo (servidor caído, enlace caducado o formato no soportado)" }
+				MediaPlayer.Event.EncounteredError -> {
+					// a dead server is not the end: walk the list before giving up
+					if (hasNext()) { buffering = true; onNextServer() }
+					else { buffering = false; error = "Ningún servidor pudo abrir el vídeo (caídos, enlace caducado o formato no soportado)" }
+				}
 				MediaPlayer.Event.EndReached -> onClose()
 			}
 		}
@@ -228,7 +266,10 @@ private fun PlayerScreen(player: MediaPlayer, title: String, onClose: () -> Unit
 			Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
 				Row(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.55f)).padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 					KomiButton(onClick = onClose, label = "‹", size = KomiButtonSize.Sm, variant = KomiButtonVariant.Outline)
-					KomiText(text = title, role = KomiTextRole.Label, color = Color.White, uppercase = false, maxLines = 1, modifier = Modifier.weight(1f))
+					Column(Modifier.weight(1f)) {
+						KomiText(text = title, role = KomiTextRole.Label, color = Color.White, uppercase = false, maxLines = 1)
+						if (serverLabel.value.isNotBlank()) KomiText(text = serverLabel.value, role = KomiTextRole.Mono, color = Color.White.copy(alpha = 0.7f), maxLines = 1)
+					}
 					KomiButton(
 						onClick = {
 							scaleIndex = (scaleIndex + 1) % ScaleModes.size

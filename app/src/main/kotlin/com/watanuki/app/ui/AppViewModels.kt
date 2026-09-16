@@ -133,7 +133,7 @@ class DetailsViewModel : ViewModel() {
 				val videos = withTimeout(VIDEO_TIMEOUT) {
 					withContext(Dispatchers.IO) { src.source.getVideoList(episode) }
 				}
-				val playable = videos.filter { !it.videoUrl.isNullOrBlank() || it.url.isNotBlank() }
+				val playable = VideoQuality.order(videos.filter { !it.videoUrl.isNullOrBlank() || it.url.isNotBlank() })
 				if (token != requestToken) return@launch
 				if (playable.isNotEmpty()) videoCache[episode.url] = playable
 				state.update {
